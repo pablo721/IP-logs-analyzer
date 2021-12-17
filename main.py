@@ -1,14 +1,12 @@
 import sys
-
-from ipcheck import IPAnalyzer
+from ip_analyzer import MainWindow
 from PyQt5.QtWidgets import QApplication
 
-def main():
-    ip = IPAnalyzer()
-    ip.show()
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication(sys.argv)
-    main()
+    app.setStyle('Fusion')
+    window = MainWindow()
+    window.show()
     sys.exit(app.exec_())
+
+
