@@ -35,7 +35,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             return
         else:
             self.df1 = pd.read_csv(filepath[0])
-            self.df2 = pd.DataFrame(self.df1.groupby(self.ip_col).describe()['Location'][['count', 'top']])
+            self.df2 = self.group_by_ip(self.df1)
             self.df2['%'] = (100 * self.df2['count'] / len(self.df1)).astype('float64').round(2)
             self.df3 = pd.DataFrame(self.df1.groupby('Location').count()['Date Created'])
             self.df3.columns = ['count']
@@ -46,8 +46,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.display_ip_table()
             self.display_loc_table()
 
+    def group_by_ip(self, df):
+        return pd.DataFrame(df.groupby(self.ip_col).describe()['Location'][['count', 'top']])
+
     def display_ip_table(self):
         self.tableView.setModel(PandasModel(self.df2))
+        self.tableView.setColumnWidth(3, 220)
 
     def display_loc_table(self):
         self.tableView_2.setModel(PandasModel(self.df3))
@@ -64,11 +68,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def compare_ips(self):
         ip = self.lineEdit.text()
-        if not ip:
-            return
-        else:
-            self.df2['matching digits'] = list(map(lambda x: self.matching_digits(ip, x), self.df2.index))
-            self.display_ip_table()
+        self.df2['matching digits'] = list(map(lambda x: self.matching_digits(ip, x), self.df2.index))
+        self.display_ip_table()
+
 
     @staticmethod
     def matching_digits(ip1, ip2):
