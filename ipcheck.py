@@ -5,7 +5,7 @@ from pandasmodel import PandasModel
 import webbrowser
 
 
-class IPChecker(QMainWindow):
+class IPAnalyzer(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('IP Checker')
@@ -85,23 +85,22 @@ class IPChecker(QMainWindow):
         if not ip:
             return
         else:
-            self.df2['octets matching'] = list(map(lambda x: self.matching_octets(ip, x), self.df2.index))
+            self.df2['matching digits'] = list(map(lambda x: self.matching_digits(ip, x), self.df2.index))
             self.table.setModel(PandasModel(self.df2))
 
     @staticmethod
-    def matching_octets(ip1, ip2):
-        splitted_ip1 = ip1.replace(' ', '').split('.')
-        splitted_ip2 = ip2.replace(' ', '').split('.')
-        if ip1.replace(' ', '') == ip2.replace(' ', ''):
-            return 4
-        elif splitted_ip1[:3] == splitted_ip2[:3]:
-            return 3
-        elif splitted_ip1[:2] == splitted_ip2[:2]:
-            return 2
-        elif splitted_ip1[0] == splitted_ip2[0]:
-            return 1
-        else:
-            return 0
+    def matching_digits(ip1, ip2):
+        n_digits = 0
+        ip11, ip22 = tuple(map(lambda x: x.replace('.', ''), [ip1, ip2]))
+
+        for x1, x2 in zip(list(ip11), list(ip22)):
+            if x1 == x2:
+                n_digits += 1
+            else:
+                break
+        return n_digits
+
+
 
     def dark_mode(self):
         self.setStyleSheet("color:rgb(255,255,255);\n"
@@ -124,6 +123,6 @@ if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
-    window = IPChecker()
+    window = IPAnalyzer()
     window.show()
     sys.exit(app.exec_())
